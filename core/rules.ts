@@ -13,6 +13,8 @@ export type Direction = "north" | "south" | "east" | "west";
 export type GameState = {
   seed: number;
   player: Cell;
+  inventory: string[];
+  changedCells: Cell[];
 };
 
 // Command: https://gameprogrammingpatterns.com/command.html
@@ -32,7 +34,7 @@ const STEPS: Record<Direction, Cell> = {
 
 // Singleton, avoided on purpose: tests make as many games as they need. https://gameprogrammingpatterns.com/singleton.html
 export function newGame(seed: number): GameState {
-  return { seed, player: { x: 0, y: 0 } };
+  return { seed, player: { x: 0, y: 0 }, inventory: [], changedCells: [] };
 }
 
 // The single way in. It updates the state it is given and returns the events.
