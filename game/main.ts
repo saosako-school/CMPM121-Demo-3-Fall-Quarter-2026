@@ -15,7 +15,7 @@ const seed = Number(new URLSearchParams(location.search).get("seed")) || 121;
 const state = newGame(seed);
 const hud = new Hud(state);
 const sounds = new Sounds(
-  document.getElementById("mute") as HTMLButtonElement,
+	document.getElementById("mute") as HTMLButtonElement,
 );
 const grid = await startGridView(document.getElementById("grid")!, state);
 const presenter = new Presenter([grid, hud, sounds]);
@@ -24,5 +24,5 @@ const controller = new Controller(state, presenter);
 // For poking at in the browser console, such as comparing logical state with
 // presentation state: game.state
 Object.assign(globalThis, {
-  game: { state, grid, hud, sounds, presenter, controller },
+	game: { state, grid, hud, sounds, presenter, controller },
 });
