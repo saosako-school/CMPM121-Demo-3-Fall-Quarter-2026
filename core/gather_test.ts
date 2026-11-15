@@ -36,7 +36,12 @@ Deno.test("gathering each passable terrain awards its resource from an empty inv
 				terrain,
 				depleted: true,
 			});
-			assertEquals(events, [{ type: "gathered", at: { x, y }, terrain }]);
+			assertEquals(events, [{
+				type: "gathered",
+				at: { x, y },
+				terrain,
+				inventory: { [TerrainResourceMap[terrain]]: 1 },
+			}]);
 			remaining.delete(terrain);
 		}
 	}

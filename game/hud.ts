@@ -36,6 +36,7 @@ export class Hud {
 			if (condition === "depleted") this.depleted.add(key);
 		}
 		this.showPosition(state.player.x, state.player.y);
+		this.showInventory(state.inventory);
 	}
 
 	show(event: GameEvent) {
@@ -44,9 +45,25 @@ export class Hud {
 		if (event.type === "gathered") {
 			this.depleted.add(`${event.at.x},${event.at.y}`);
 			this.showPosition(event.at.x, event.at.y);
+			this.showInventory(event.inventory);
 		}
 	}
 
+	private showInventory(inventory: Record<string, number>) {
+		const list = element("inventory");
+		list.replaceChildren();
+
+		for (const [item, count] of Object.entries(inventory)) {
+			const row = document.createElement("li");
+			const name = document.createElement("span");
+			const amount = document.createElement("strong");
+
+			name.textContent = item;
+			amount.textContent = String(count);
+			row.append(name, amount);
+			list.append(row);
+		}
+	}
 	private showPosition(x: number, y: number) {
 		element("position").textContent = `${x}, ${y}`;
 		const suffix = this.depleted.has(`${x},${y}`) ? " (depleted)" : "";

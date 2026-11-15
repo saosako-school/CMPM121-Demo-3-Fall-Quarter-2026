@@ -4,6 +4,12 @@ body {
 	background: #14161a;
 	color: #e8e4da;
 	font: 14px system-ui, sans-serif;
+
+	background-color: #080d18;
+	background-image:
+		radial-gradient(1px 1px at 15px 25px, #ffffff90 99%, transparent),
+		radial-gradient(1px 1px at 80px 65px, #ffffff60 99%, transparent);
+	background-size: 140px 140px, 210px 190px;
 }
 
 #app {
@@ -80,4 +86,49 @@ body {
 		transparent 55%,
 		rgb(0 0 0 / 0.5) 100%
 	);
+}
+
+/*Space Style UI*/
+#hud {
+	box-sizing: border-box;
+	padding: 20px;
+	background: #101923;
+	border: 1px solid #526779;
+	border-radius: 8px;
+	font-family: monospace;
+}
+
+#inventory-heading {
+	margin: 0 0 12px;
+	color: #a9dded;
+	font-size: 18px;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+#inventory {
+	display: grid;
+	gap: 8px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+#inventory li {
+	display: flex;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 10px;
+	background: #1b2936;
+	border-left: 3px solid #89c6dc;
+}
+
+#inventory strong {
+	color: #b9ebff;
+	font-variant-numeric: tabular-nums;
+}
+
+button:focus-visible {
+	outline: 3px solid #b9ebff;
+	outline-offset: 4px;
 }

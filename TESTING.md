@@ -24,7 +24,7 @@ For a person, or an agent driving a browser. Run `deno task dev` and open the lo
 
 ## Gathering
 
-Reload with `?seed=121` before this sequence. Inventory is currently inspected through `game.state.inventory`; the visible inventory panel comes in Step 2.
+Reload with `?seed=121` before this sequence. Check the visible inventory panel and compare its counts with `game.state.inventory` in the console after animations settle.
 
 | Action                                                              | Expected observation                                                                                                                                                           |
 | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -37,3 +37,14 @@ Reload with `?seed=121` before this sequence. Inventory is currently inspected t
 | Mash arrows and G, then stop                                        | Animations finish in order; the marker settles on the core's player cell.                                                                                                      |
 | Tab to the sound button and press Space or Enter                    | Sound toggles without gathering or changing inventory.                                                                                                                         |
 | Use Ctrl, Command, or Alt with G                                    | No gather command is sent; browser shortcuts remain available.                                                                                                                 |
+
+### Inventory, timing, and sound
+
+| Action                                                                                                            | Expected observation                                                                                                                             |
+| ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Reload the game                                                                                                   | The HTML inventory panel shows the starting item names and counts, matching `game.state.inventory`.                                              |
+| Press G on a fresh cell                                                                                           | The correct visible item count increases by one as the gathering animation starts, never before it starts.                                       |
+| Press G again on the depleted cell                                                                                | Visible inventory counts remain unchanged.                                                                                                       |
+| Move to a fresh cell and gather                                                                                   | The panel updates the correct resource while retaining previously collected items and counts.                                                    |
+| With sound enabled, gather successfully and then gather again on the depleted cell                                | Success and failure have distinguishable sounds. Have a person listen with speakers or headphones.                                               |
+| Temporarily set `WALK_MS` in `game/grid/grid_view.ts` to `3000`, reload, tap an arrow, then tap G during the walk | The inventory stays unchanged during the walk and updates only when the queued gathering animation starts. Restore `WALK_MS` to `120` afterward. |

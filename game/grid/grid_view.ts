@@ -16,10 +16,10 @@ const GATHERSHAKE = 1.5;
 const GATHER_MS = 100;
 
 const TERRAIN_COLORS: Record<Terrain, number> = {
-	rock: 0x5d9e4a,
-	meadow: 0x2f6b3a,
-	acid: 0x2d5f9e,
-	crystal: 0x6e6a66,
+	rock: 0x85858d,
+	meadow: 0xaaa6a0,
+	acid: 0x34465c,
+	crystal: 0x9caec7,
 };
 
 // Enough cells to cover the view, plus a margin so that the camera can lag behind
