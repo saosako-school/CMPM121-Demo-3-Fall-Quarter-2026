@@ -83,48 +83,20 @@ function move(state: GameState, direction: Direction): GameEvent[] {
 	return [{ type: "moved", from, to }];
 }
 
+export function cellAt(state: GameState, cell: Cell) {
+	return {
+		terrain: terrainAt(state.seed, cell.x, cell.y),
+		depleted: state.changedCells[`${cell.x},${cell.y}`] === "depleted",
+	};
+}
+
 function gather(state: GameState): GameEvent[] {
-	const currentTile = { ...state.player };
-	//do something
-	const coords = `${currentTile.x},${currentTile.y}`;
-	if (coords in state.changedCells) {
-		console.log("cry");
-		return [{ type: "gatherFailed", at: currentTile }];
-		// create game event
-	} else {
-		const yieldedResource = TerrainResourceMap[
-			terrainAt(state.seed, currentTile.x, currentTile.y)
-		];
-		state.inventory[yieldedResource] += 1;
-		state.changedCells[coords] = "depleted";
-		return [{
-			type: "gathered",
-			at: currentTile,
-			terrain: terrainAt(state.seed, currentTile.x, currentTile.y),
-		}];
-	}
-	// code for when eventually having to deal with checkin for tiles changing / cant gether there (later problem)
-	/*if () {
+	const at = { ...state.player };
+	const { terrain, depleted } = cellAt(state, at);
+	if (depleted) return [{ type: "gatherFailed", at }];
 
-  }
-  else {
-    state.inventory[terrainAt(state.seed, currentTile.x, currentTile.y)] += 1;
-    return [{
-      type: "gathered",
-      at: { x: currentTile.x, y: currentTile.y },
-      terrain: terrainAt(state.seed, currentTile.x, currentTile.y),
-    }];
-  }
-  */
-
-	/*const yieldedResource =
-		TerrainResourceMap[terrainAt(state.seed, currentTile.x, currentTile.y)];
-	state.inventory[yieldedResource] += 1;
-	//state.inventory[terrainAt(state.seed, currentTile.x, currentTile.y)] += 1;
-
-	return [{
-		type: "gathered",
-		at: { x: currentTile.x, y: currentTile.y },
-		terrain: terrainAt(state.seed, currentTile.x, currentTile.y),
-	}];*/
+	const resource = TerrainResourceMap[terrain];
+	state.inventory[resource] = (state.inventory[resource] ?? 0) + 1;
+	state.changedCells[`${at.x},${at.y}`] = "depleted";
+	return [{ type: "gathered", at, terrain }];
 }

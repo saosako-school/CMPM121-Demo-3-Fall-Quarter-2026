@@ -1,5 +1,9 @@
-import { type GameEvent, type GameState, terrainAt } from "../core/mod.ts";
-import { TerrainResourceMap } from "../core/terrain.ts";
+import {
+	type GameEvent,
+	type GameState,
+	terrainAt,
+	TerrainResourceMap,
+} from "../core/mod.ts";
 
 function element(id: string): HTMLElement {
 	return document.getElementById(id)!;
@@ -16,7 +20,7 @@ function describe(event: GameEvent): string {
 				TerrainResourceMap[event.terrain]
 			} from ${event.terrain} at ${event.at.x}, ${event.at.y}`;
 		case "gatherFailed":
-			return `gather failed at ${event.at.x}, ${event.at.y}`;
+			return `gather failed at ${event.at.x}, ${event.at.y}: cell depleted`;
 	}
 }
 
@@ -24,19 +28,28 @@ function describe(event: GameEvent): string {
 // tools can read. It changes only as events play.
 export class Hud {
 	private readonly seed: number;
+	private readonly depleted = new Set<string>();
 
 	constructor(state: GameState) {
 		this.seed = state.seed;
+		for (const [key, condition] of Object.entries(state.changedCells)) {
+			if (condition === "depleted") this.depleted.add(key);
+		}
 		this.showPosition(state.player.x, state.player.y);
 	}
 
 	show(event: GameEvent) {
 		element("live").textContent = describe(event);
 		if (event.type === "moved") this.showPosition(event.to.x, event.to.y);
+		if (event.type === "gathered") {
+			this.depleted.add(`${event.at.x},${event.at.y}`);
+			this.showPosition(event.at.x, event.at.y);
+		}
 	}
 
 	private showPosition(x: number, y: number) {
 		element("position").textContent = `${x}, ${y}`;
-		element("terrain").textContent = terrainAt(this.seed, x, y);
+		const suffix = this.depleted.has(`${x},${y}`) ? " (depleted)" : "";
+		element("terrain").textContent = terrainAt(this.seed, x, y) + suffix;
 	}
 }

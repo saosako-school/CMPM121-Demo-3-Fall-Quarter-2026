@@ -39,6 +39,7 @@ function cellCenter({ x, y }: Cell): Cell {
 export class GridView extends Phaser.Scene {
 	private readonly seed: number;
 	private readonly start: Cell;
+	private readonly depleted = new Set<string>();
 	private ground!: Phaser.GameObjects.Graphics;
 	private marker!: Phaser.GameObjects.Arc;
 
@@ -46,6 +47,9 @@ export class GridView extends Phaser.Scene {
 		super("grid");
 		this.seed = state.seed;
 		this.start = { ...state.player };
+		for (const [key, condition] of Object.entries(state.changedCells)) {
+			if (condition === "depleted") this.depleted.add(key);
+		}
 	}
 
 	create() {
@@ -87,6 +91,8 @@ export class GridView extends Phaser.Scene {
 				//{ type: "blocked"; at: Cell; toward: Cell; terrain: Terrain }
 				return this.bump(event.at, event.toward);
 			case "gathered":
+				this.depleted.add(`${event.at.x},${event.at.y}`);
+				this.drawCellsAround(event.at);
 				return this.sway(event.at);
 			case "gatherFailed":
 				return this.sway(event.at);
@@ -168,6 +174,7 @@ export class GridView extends Phaser.Scene {
 			) {
 				this.ground.fillStyle(
 					TERRAIN_COLORS[terrainAt(this.seed, x, y)],
+					this.depleted.has(`${x},${y}`) ? 0.35 : 1,
 				);
 				this.ground.fillRect(
 					x * CELL_SIZE,

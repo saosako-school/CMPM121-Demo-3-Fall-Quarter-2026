@@ -38,8 +38,10 @@ export class Controller {
 
 	private keyDown(event: KeyboardEvent) {
 		const direction = ARROWS[event.key];
+		const gathering = event.key.toLowerCase() === "g";
 		if (
-			!(direction || event.key == " ") //|| event.ctrlKey || event.metaKey || event.altKey
+			!(direction || gathering) || event.ctrlKey || event.metaKey ||
+			event.altKey
 		) return;
 		// Otherwise arrow keys would also scroll the page.
 		event.preventDefault();
@@ -48,7 +50,7 @@ export class Controller {
 			this.held.push(direction);
 			this.pressed = { type: "move", direction };
 			this.next();
-		} else if (event.key == " ") {
+		} else if (gathering) {
 			this.pressed = { type: "gather" };
 			this.next();
 		}

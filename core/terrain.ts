@@ -3,17 +3,12 @@
 
 export type Terrain = "rock" | "meadow" | "acid" | "crystal";
 
-interface TerrainInfo {
-	name: string;
-	yield: string;
-}
-
 export const TerrainResourceMap = {
 	"rock": "mineral",
 	"meadow": "slimy moss",
 	"acid": "acid goop",
 	"crystal": "glowing crystal",
-} as const satisfies Record<string, string>;
+} as const satisfies Record<Terrain, string>;
 
 export function terrainAt(seed: number, x: number, y: number): Terrain {
 	const raw = 0.65 * noise(seed, x, y, 9) + 0.35 * noise(seed + 1, x, y, 3);

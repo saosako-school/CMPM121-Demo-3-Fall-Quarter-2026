@@ -1,5 +1,11 @@
 import { assertEquals } from "@std/assert";
-import { apply, type GameState, isPassable, terrainAt } from "./mod.ts";
+import {
+	apply,
+	type GameState,
+	isPassable,
+	newGame,
+	terrainAt,
+} from "./mod.ts";
 
 // Each test has a Given-When-Then shape: https://martinfowler.com/bliki/GivenWhenThen.html
 const SEED = 121;
@@ -11,12 +17,9 @@ function besideEasternCell(passable: boolean): GameState {
 		const here = isPassable(terrainAt(SEED, x, 0));
 		const east = isPassable(terrainAt(SEED, x + 1, 0));
 		if (here && east === passable) {
-			return {
-				seed: SEED,
-				player: { x, y: 0 },
-				inventory: {},
-				changedCells: {},
-			};
+			const state = newGame(SEED);
+			state.player = { x, y: 0 };
+			return state;
 		}
 	}
 	throw new Error("Found no suitable cell on this row.");
