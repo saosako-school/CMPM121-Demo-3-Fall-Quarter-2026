@@ -44,7 +44,18 @@ export class RecipeBook {
 			status.className = "recipe-status";
 			status.textContent = ready ? "READY TO CRAFT" : "MISSING MATERIALS";
 
-			button.append(title, status);
+			const ingredientsList = document.createElement("div");
+			ingredientsList.className = "recipe-ingredients";
+
+			for (const ingredient of recipe.ingredients) {
+				const ingredientTag = document.createElement("span");
+				ingredientTag.className = "ingredient-tag";
+				ingredientTag.textContent =
+					`${ingredient.name} x${ingredient.amount}`;
+
+				ingredientsList.append(ingredientTag);
+			}
+			button.append(title, ingredientsList, status);
 		}
 	}
 }

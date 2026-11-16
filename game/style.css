@@ -235,3 +235,10 @@ button:focus-visible {
 	color: #ff8b8b;
 	background: #392329;
 }
+
+#recipes {
+	max-height: min(55vh, 600px);
+	overflow-y: auto;
+	scrollbar-gutter: stable;
+	padding: 6px;
+}

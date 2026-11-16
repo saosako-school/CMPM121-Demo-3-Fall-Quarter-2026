@@ -1,8 +1,45 @@
-# D3 starter
+# GAME TITLE
 
-A walking skeleton: one thin slice of a game that works from end to end. The player moves gridwise over a big seeded world, with a game core that knows nothing about Phaser and a Phaser client that presents what the core reports. Assignment instructions are on Canvas.
+You are an astronaut stranded on the Moon after a spaceship crash. Explore the moon, gather materials, and create new items to reach new terrain.
 
-Install [Deno](https://docs.deno.com/runtime/getting_started/installation/) and [Git](https://git-scm.com/downloads). Create your own repository from this template, clone it, open a terminal in that folder, and run `deno task setup` once. Run `deno task dev` and open the local URL printed in the terminal (normally `http://localhost:3000`). Arrow keys move. Add `?seed=7` to the URL for another world. Open the repository folder itself in VS Code, not a parent folder, and accept the recommended Deno extension. If Phaser still shows errors or `any` after `deno task setup`, type or save in that file once.
+[Playable Link](https://saosako-school.github.io/CMPM121-Demo-3-Fall-Quarter-2026/)
+
+## How to play
+
+- **Arrow keys:** move one cell at a time; hold an arrow to keep moving.
+- **G:** gather materials from the cell you stand on. Each cell can be gathered once; depleted cells appear darker.
+- **Tab / Shift + Tab:** move forward or backward through recipe buttons
+- **Enter or Space:** activate the focused recipe button to craft. Recipes can also be clicked.
+- **Sound button:** toggle audio.
+
+## Run locally
+
+Install [Deno](https://docs.deno.com/runtime/getting_started/installation/) and [Git](https://git-scm.com/downloads), clone this repository, and open a terminal in its root folder.
+
+Run setup once per clone:
+
+```sh
+deno task setup
+```
+
+Start a local server:
+
+```sh
+deno task dev
+```
+
+## Add a recipe
+
+1. In `core/recipes.ts` add a row to `recipes`. Include a description, an `ingredients` list with each item's name and amount, and an `output` with its name and amount.
+2. Each ingredient must come from terrain gathering or another recipe. A new gatherable material is defined in `TerrainResourceMap` in `core/terrain.ts`.
+3. Ordinary recipes need no additional crafting rule or button code. `core/rules.ts` checks and spends ingredients, and `game/recipe_book.ts` creates the recipe buttons from the table.
+4. Run `deno task test` to check the core rules and ingredient sources
+
+## Testing
+
+Run automated core tests with `deno task test`, type checking with `deno task check`, and all checks plus the production build with `deno task ci`.
+
+Follow [TESTING.md](TESTING.md) for manual checks of input, animation timing, inventory, and sound. Automated core tests do not replace browser playtesting. Document new crafting, barrier, and ending checks as those features are completed.
 
 ## Two folders, two rules
 
