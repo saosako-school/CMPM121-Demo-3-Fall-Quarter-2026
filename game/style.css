@@ -128,6 +128,14 @@ body {
 	font-variant-numeric: tabular-nums;
 }
 
+#recipe-heading {
+	margin: 0 0 12px;
+	color: #a9dded;
+	font-size: 18px;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
 button:focus-visible {
 	outline: 3px solid #b9ebff;
 	outline-offset: 4px;

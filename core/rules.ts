@@ -128,7 +128,7 @@ function gather(state: GameState): GameEvent[] {
 
 function craft(state: GameState, recipe: Recipe): GameEvent[] {
 	// check for crafting failure
-	const missingItems: ingredient[] = missingItemsForRecepie(state, recipe);
+	const missingItems: ingredient[] = missingItemsForRecipe(state, recipe);
 	if (missingItems.length > 0) {
 		return [{
 			type: "craftingFailed",
@@ -156,7 +156,7 @@ function craft(state: GameState, recipe: Recipe): GameEvent[] {
 }
 
 // helper funciton that checks if the inventory has the required items for a recpie, and returns items that are missing and their amounts
-function missingItemsForRecepie(state: GameState, recipe: Recipe) {
+export function missingItemsForRecipe(state: GameState, recipe: Recipe) {
 	const missingItems: ingredient[] = [];
 	for (let i = 0; i < recipe.ingredients.length; i++) {
 		const ingredient = recipe.ingredients[i];

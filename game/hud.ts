@@ -21,8 +21,15 @@ function describe(event: GameEvent): string {
 			} from ${event.terrain} at ${event.at.x}, ${event.at.y}`;
 		case "crafted":
 			return `you crafted ${event.recipe.output.amount} ${event.recipe.output.name}`;
-		case "craftingFailed":
-			return `you failed to craft ${event.recipe.output.name}`;
+		case "craftingFailed": {
+			let missingString =
+				`you failed to craft ${event.recipe.output.name} because you were missing: `;
+			for (let i = 0; i < event.missing.length; i++) {
+				const missing = event.missing[i];
+				missingString += `${missing.amount} ${missing.name}\n`;
+			}
+			return missingString;
+		}
 	}
 	return "error";
 }
@@ -48,6 +55,9 @@ export class Hud {
 		if (event.type === "gathered") {
 			this.depleted.add(`${event.at.x},${event.at.y}`);
 			this.showPosition(event.at.x, event.at.y);
+			this.showInventory(event.inventory);
+		}
+		if (event.type === "crafted") {
 			this.showInventory(event.inventory);
 		}
 	}
