@@ -9,6 +9,8 @@ const ARROWS: Record<string, Direction> = {
 	ArrowRight: "east",
 };
 
+//const recipeButtons = document.getElementById("#recipes").children;
+
 // Input in, core in the middle, presenter out. None of those three knows the others,
 // which makes this a Mediator: https://refactoring.guru/design-patterns/mediator
 // There is no frame loop here: a command runs on a key press or when playback ends.
@@ -34,6 +36,7 @@ export class Controller {
 		addEventListener("keydown", (event) => this.keyDown(event));
 		addEventListener("keyup", (event) => this.keyUp(event));
 		addEventListener("blur", () => this.held = []);
+		//addEventListener("click", (event) => this.clickButton(event));
 	}
 
 	private keyDown(event: KeyboardEvent) {
@@ -77,5 +80,10 @@ export class Controller {
 		// here until the stack overflowed. No events means there is nothing to wait for.
 		const events = apply(this.state, command);
 		if (events.length > 0) this.presenter.play(events);
+	}
+
+	public onCraft(command: Command) {
+		this.pressed = command;
+		this.next();
 	}
 }

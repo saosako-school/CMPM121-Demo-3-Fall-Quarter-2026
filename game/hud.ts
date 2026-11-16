@@ -19,9 +19,12 @@ function describe(event: GameEvent): string {
 			return `gathered ${
 				TerrainResourceMap[event.terrain]
 			} from ${event.terrain} at ${event.at.x}, ${event.at.y}`;
-		case "gatherFailed":
-			return `gather failed at ${event.at.x}, ${event.at.y}: cell depleted`;
+		case "crafted":
+			return `you crafted ${event.recipe.output.amount} ${event.recipe.output.name}`;
+		case "craftingFailed":
+			return `you failed to craft ${event.recipe.output.name}`;
 	}
+	return "error";
 }
 
 // The readout, as ordinary page elements that CSS can style and that assistive

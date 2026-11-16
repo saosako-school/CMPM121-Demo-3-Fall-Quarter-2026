@@ -11,8 +11,8 @@ const WALK_MS = 120;
 const BUMP_MS = 60;
 const MARKER_COLOR = 0xf5e6a8;
 const BUMP_COLOR = 0xe0533d;
-const GATHER_COLOR = 0xf7e38f;
-const GATHERSHAKE = 1.5;
+const GATHER_COLOR = 0xbaa85d;
+const GATHERSHAKE = 3.5;
 const GATHER_MS = 100;
 
 const TERRAIN_COLORS: Record<Terrain, number> = {
@@ -96,6 +96,10 @@ export class GridView extends Phaser.Scene {
 				return this.sway(event.at);
 			case "gatherFailed":
 				return this.sway(event.at);
+			case "crafted":
+				return this.sway(event.at, false);
+			case "craftingFailed":
+				return this.sway(event.at, false);
 			default:
 				// A new event type fails to type-check here until it has a presentation.
 				event satisfies never;
@@ -134,22 +138,26 @@ export class GridView extends Phaser.Scene {
 		});
 	}
 
-	private sway(at: Cell): Promise<void> {
+	// animation for gather on both sucess and fail
+	private sway(at: Cell, sideways: boolean = true): Promise<void> {
+		let swayDir = { x: 1, y: 0 };
+		if (!sideways) swayDir = { x: 0, y: 1 };
 		const start = cellCenter(at);
 		this.marker.setFillStyle(GATHER_COLOR);
+		const shakeRan: 1 | -1 = Math.random() < 0.5 ? -1 : 1;
 		return new Promise((done) => {
 			this.tweens.chain({
 				targets: this.marker,
 				tweens: [
 					{
-						x: start.x + GATHERSHAKE,
-						y: start.y,
+						x: start.x + GATHERSHAKE * shakeRan * swayDir.x,
+						y: start.y + GATHERSHAKE * shakeRan * swayDir.y,
 						duration: GATHER_MS,
 						yoyo: true,
 					},
 					{
-						x: start.x - GATHERSHAKE,
-						y: start.y,
+						x: start.x - GATHERSHAKE * shakeRan * swayDir.x,
+						y: start.y - GATHERSHAKE * shakeRan * swayDir.y,
 						duration: GATHER_MS,
 						yoyo: true,
 					},

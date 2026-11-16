@@ -2,6 +2,7 @@
 // once, and the events it returns are a record of what happened. Whoever called
 // apply() decides how, or whether, to show them over time.
 
+import { ingredient, Recipe } from "./recipes.ts";
 import {
 	isPassable,
 	type Terrain,
@@ -25,7 +26,7 @@ export type GameState = {
 // Command: https://gameprogrammingpatterns.com/command.html
 export type Command = { type: "move"; direction: Direction } | {
 	type: "gather";
-};
+} | { type: "craft"; recipe: Recipe };
 
 // Domain Event: https://martinfowler.com/eaaDev/DomainEvent.html
 export type GameEvent =
@@ -37,7 +38,19 @@ export type GameEvent =
 		terrain: Terrain;
 		inventory: Record<string, number>;
 	}
-	| { type: "gatherFailed"; at: Cell };
+	| { type: "gatherFailed"; at: Cell }
+	| {
+		type: "crafted";
+		at: Cell;
+		recipe: Recipe;
+		inventory: Record<string, number>;
+	}
+	| {
+		type: "craftingFailed";
+		at: Cell;
+		recipe: Recipe;
+		missing: ingredient[];
+	};
 
 const STEPS: Record<Direction, Cell> = {
 	north: { x: 0, y: -1 },
@@ -68,6 +81,8 @@ export function apply(state: GameState, command: Command): GameEvent[] {
 			return move(state, command.direction);
 		case "gather":
 			return gather(state);
+		case "craft":
+			return craft(state, command.recipe);
 	}
 }
 
@@ -109,4 +124,49 @@ function gather(state: GameState): GameEvent[] {
 		terrain,
 		inventory: { ...state.inventory },
 	}];
+}
+
+function craft(state: GameState, recipe: Recipe): GameEvent[] {
+	// check for crafting failure
+	const missingItems: ingredient[] = missingItemsForRecepie(state, recipe);
+	if (missingItems.length > 0) {
+		return [{
+			type: "craftingFailed",
+			at: state.player,
+			recipe: recipe,
+			missing: missingItems,
+		}];
+	}
+
+	// else do remove ingidients and add crafted item in game state
+	for (let i = 0; i < recipe.ingredients.length; i++) {
+		const ingredient = recipe.ingredients[i];
+		state.inventory[ingredient.name] -= ingredient.amount;
+	}
+	state.inventory[recipe.output.name] =
+		(state.inventory[recipe.output.name] ?? 0) + recipe.output.amount;
+
+	//return game event
+	return [{
+		type: "crafted",
+		at: state.player,
+		recipe: recipe,
+		inventory: state.inventory,
+	}];
+}
+
+// helper funciton that checks if the inventory has the required items for a recpie, and returns items that are missing and their amounts
+function missingItemsForRecepie(state: GameState, recipe: Recipe) {
+	const missingItems: ingredient[] = [];
+	for (let i = 0; i < recipe.ingredients.length; i++) {
+		const ingredient = recipe.ingredients[i];
+		const currentStock = state.inventory[ingredient.name] ?? 0;
+		if (currentStock < ingredient.amount) {
+			missingItems.push({
+				name: ingredient.name,
+				amount: ingredient.amount - currentStock,
+			});
+		}
+	}
+	return missingItems;
 }
