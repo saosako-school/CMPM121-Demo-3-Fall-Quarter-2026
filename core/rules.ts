@@ -64,12 +64,7 @@ export function newGame(seed: number): GameState {
 	return {
 		seed,
 		player: { x: 0, y: 0 },
-		inventory: {
-			"mineral": 0,
-			"slimy moss": 0,
-			"acid goop": 0,
-			"glowing crystal": 0,
-		},
+		inventory: {},
 		changedCells: {},
 	};
 }
@@ -95,7 +90,7 @@ function move(state: GameState, direction: Direction): GameEvent[] {
 	const from = { ...state.player };
 	const to = { x: from.x + step.x, y: from.y + step.y };
 	const terrain = terrainAt(state.seed, to.x, to.y);
-	if (!isPassable(terrain)) {
+	if (!isPassable(terrain, state)) {
 		return [{ type: "blocked", at: from, toward: to, terrain }];
 	}
 	state.player.x = to.x;

@@ -19,6 +19,8 @@ function describe(event: GameEvent): string {
 			return `gathered ${
 				TerrainResourceMap[event.terrain]
 			} from ${event.terrain} at ${event.at.x}, ${event.at.y}`;
+		case "gatherFailed":
+			return `gather failed at ${event.at.x}, ${event.at.y} because the land is barren`;
 		case "crafted":
 			return `you crafted ${event.recipe.output.amount} ${event.recipe.output.name}`;
 		case "craftingFailed": {

@@ -15,9 +15,11 @@ export class RecipeBook {
 		for (let i = 0; i < recipes.length; ++i) {
 			const button = document.createElement("button");
 			const listItem = document.createElement("li");
-			button.addEventListener("click", () => {
+			button.addEventListener("click", (event) => {
 				craftFunction({ type: "craft", recipe: recipes[i] });
-				button.blur();
+				if (event.detail > 0) {
+					button.blur();
+				}
 			});
 			listItem.append(button);
 			recipeList.append(listItem);
@@ -27,16 +29,22 @@ export class RecipeBook {
 
 	updateTextContent(state: GameState) {
 		for (let i = 0; i < this.recipeButtons.length; ++i) {
+			const button = this.recipeButtons[i];
+			const recipe = recipes[i];
 			const ready = missingItemsForRecipe(state, recipes[i]).length == 0;
-			if (ready) {
-				this.recipeButtons[i].textContent = `${
-					recipes[i].description
-				} READY TO CRAFT`;
-			} else {
-				this.recipeButtons[i].textContent = `${
-					recipes[i].description
-				} NOT ENOUGH MATERIALS`;
-			}
+
+			button.classList.toggle("ready", ready);
+			button.replaceChildren();
+
+			const title = document.createElement("span");
+			title.className = "recipe-title";
+			title.textContent = recipe.output.name;
+
+			const status = document.createElement("span");
+			status.className = "recipe-status";
+			status.textContent = ready ? "READY TO CRAFT" : "MISSING MATERIALS";
+
+			button.append(title, status);
 		}
 	}
 }

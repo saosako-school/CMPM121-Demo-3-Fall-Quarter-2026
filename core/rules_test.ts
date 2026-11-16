@@ -14,10 +14,10 @@ const SEED = 121;
 // Searching keeps these tests honest if the terrain formula changes.
 function besideEasternCell(passable: boolean): GameState {
 	for (let x = 2; x < 10_000; x++) {
-		const here = isPassable(terrainAt(SEED, x, 0));
-		const east = isPassable(terrainAt(SEED, x + 1, 0));
+		const state = newGame(SEED);
+		const here = isPassable(terrainAt(SEED, x, 0), state);
+		const east = isPassable(terrainAt(SEED, x + 1, 0), state);
 		if (here && east === passable) {
-			const state = newGame(SEED);
 			state.player = { x, y: 0 };
 			return state;
 		}

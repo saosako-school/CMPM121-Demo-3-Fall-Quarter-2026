@@ -54,22 +54,24 @@ Deno.test("crafting with insufficient items fails and changes nothing", () => {
 
 Deno.test("every recipe input has a valid source (terrain or another recipe)", () => {
 	const validSources = new Set<string>();
+	const state = newGame(SEED);
+	state.inventory["impenetrable boots"] = 1;
 
-	// 1. Collect gatherable resources from terrain map safely
+	// Collect gatherable resources from terrain map safely
 	for (const terrain of Object.keys(TerrainResourceMap)) {
-		if (isPassable(terrain as Terrain)) {
+		if (isPassable(terrain as Terrain, state)) {
 			const resource =
 				TerrainResourceMap[terrain as keyof typeof TerrainResourceMap];
 			validSources.add(resource);
 		}
 	}
 
-	// 2. Collect recipe outputs
+	// Collect recipe outputs
 	for (const recipe of recipes) {
 		validSources.add(recipe.output.name);
 	}
 
-	// 3. Verify every ingredient has a source
+	// Verify every ingredient has a source
 	for (const recipe of recipes) {
 		for (const ingredient of recipe.ingredients) {
 			assertEquals(

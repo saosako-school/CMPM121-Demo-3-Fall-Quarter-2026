@@ -1,13 +1,16 @@
 // The world is a pure function of a seed and coordinates. Nothing here is stored,
 // so the world can be effectively unbounded while saved state stays small.
 
+import { GameState } from "./rules.ts";
+
 export type Terrain = "rock" | "meadow" | "acid" | "crystal";
+export const TERRAINS = ["rock", "meadow", "acid", "crystal"] as const;
 
 export const TerrainResourceMap = {
 	"rock": "mineral",
 	"meadow": "slimy moss",
 	"acid": "acid goop",
-	"crystal": "glowing crystal",
+	"crystal": "crystal fragment",
 } as const satisfies Record<Terrain, string>;
 
 export function terrainAt(seed: number, x: number, y: number): Terrain {
@@ -20,7 +23,12 @@ export function terrainAt(seed: number, x: number, y: number): Terrain {
 	return noise(seed + 2, x, y, 6) < 0.45 ? "meadow" : "rock";
 }
 
-export function isPassable(terrain: Terrain): boolean {
+export function isPassable(terrain: Terrain, state: GameState): boolean {
+	if (
+		(terrain == "acid" && state.inventory["acid boots"] ||
+			state.inventory["impenetrable boots"]) ||
+		(terrain == "crystal" && state.inventory["impenetrable boots"])
+	) return true;
 	return terrain !== "acid" && terrain !== "crystal";
 }
 

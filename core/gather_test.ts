@@ -10,9 +10,10 @@ import {
 
 Deno.test("gathering each passable terrain awards its resource from an empty inventory", () => {
 	const remaining = new Set(
-		Object.keys(TerrainResourceMap).filter((terrain) =>
-			isPassable(terrain as Parameters<typeof isPassable>[0])
-		),
+		Object.keys(TerrainResourceMap).filter((terrain) => {
+			const state = newGame(121);
+			isPassable(terrain as Parameters<typeof isPassable>[0], state);
+		}),
 	);
 	for (let y = -100; y <= 100 && remaining.size; y++) {
 		for (let x = -100; x <= 100 && remaining.size; x++) {
