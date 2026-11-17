@@ -12,9 +12,14 @@ Deno.test("gathering each passable terrain awards its resource from an empty inv
 	const remaining = new Set(
 		Object.keys(TerrainResourceMap).filter((terrain) => {
 			const state = newGame(121);
-			isPassable(terrain as Parameters<typeof isPassable>[0], state);
+			return isPassable(
+				terrain as Parameters<typeof isPassable>[0],
+				state,
+			);
 		}),
 	);
+	assertEquals(remaining.size > 0, true, "No passable terrains were tested.");
+
 	for (let y = -100; y <= 100 && remaining.size; y++) {
 		for (let x = -100; x <= 100 && remaining.size; x++) {
 			const terrain = terrainAt(121, x, y);
