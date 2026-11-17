@@ -21,6 +21,7 @@ export type GameState = {
 	player: Cell;
 	inventory: Record<string, number>;
 	changedCells: Record<string, string>;
+	ended: boolean;
 };
 
 // Command: https://gameprogrammingpatterns.com/command.html
@@ -50,7 +51,8 @@ export type GameEvent =
 		at: Cell;
 		recipe: Recipe;
 		missing: ingredient[];
-	};
+	}
+	| { type: "ended" };
 
 const STEPS: Record<Direction, Cell> = {
 	north: { x: 0, y: -1 },
@@ -66,11 +68,13 @@ export function newGame(seed: number): GameState {
 		player: { x: 0, y: 0 },
 		inventory: {},
 		changedCells: {},
+		ended: false,
 	};
 }
 
 // The single way in. It updates the state it is given and returns the events.
 export function apply(state: GameState, command: Command): GameEvent[] {
+	if (state.ended) return [];
 	switch (command.type) {
 		case "move":
 			return move(state, command.direction);
@@ -122,32 +126,73 @@ function gather(state: GameState): GameEvent[] {
 }
 
 function craft(state: GameState, recipe: Recipe): GameEvent[] {
-	// check for crafting failure
-	const missingItems: ingredient[] = missingItemsForRecipe(state, recipe);
-	if (missingItems.length > 0) {
+	//Copy the recipe and its ingredients.
+	const recipeCopy: Recipe = {
+		description: recipe.description,
+		ingredients: [],
+		output: {
+			name: recipe.output.name,
+			amount: recipe.output.amount,
+		},
+	};
+
+	if (recipe.winsGame !== undefined) {
+		recipeCopy.winsGame = recipe.winsGame;
+	}
+
+	for (const item of recipe.ingredients) {
+		recipeCopy.ingredients.push({
+			name: item.name,
+			amount: item.amount,
+		});
+	}
+
+	//Check materials.
+	const missing = missingItemsForRecipe(state, recipe);
+
+	if (missing.length > 0) {
 		return [{
 			type: "craftingFailed",
-			at: state.player,
-			recipe: recipe,
-			missing: missingItems,
+			at: {
+				x: state.player.x,
+				y: state.player.y,
+			},
+			recipe: recipeCopy,
+			missing: missing,
 		}];
 	}
 
-	// else do remove ingidients and add crafted item in game state
-	for (let i = 0; i < recipe.ingredients.length; i++) {
-		const ingredient = recipe.ingredients[i];
-		state.inventory[ingredient.name] -= ingredient.amount;
+	for (const item of recipe.ingredients) {
+		state.inventory[item.name] -= item.amount;
 	}
-	state.inventory[recipe.output.name] =
-		(state.inventory[recipe.output.name] ?? 0) + recipe.output.amount;
+	const outputName = recipe.output.name;
+	const currentAmount = state.inventory[outputName] ?? 0;
+	state.inventory[outputName] = currentAmount + recipe.output.amount;
 
-	//return game event
-	return [{
+	//Copy inventory so later actions don't change the event.
+	const inventoryCopy: Record<string, number> = {};
+
+	for (const name of Object.keys(state.inventory)) {
+		inventoryCopy[name] = state.inventory[name];
+	}
+
+	const events: GameEvent[] = [{
 		type: "crafted",
-		at: state.player,
-		recipe: recipe,
-		inventory: state.inventory,
+		at: {
+			x: state.player.x,
+			y: state.player.y,
+		},
+		recipe: recipeCopy,
+		inventory: inventoryCopy,
 	}];
+
+	// The final repair ends the game.
+	if (recipe.winsGame === true) {
+		state.ended = true;
+		events.push({ type: "ended" });
+	}
+
+	return events;
 }
 
 // helper funciton that checks if the inventory has the required items for a recpie, and returns items that are missing and their amounts

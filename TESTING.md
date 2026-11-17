@@ -48,3 +48,13 @@ Reload with `?seed=121` before this sequence. Check the visible inventory panel 
 | Move to a fresh cell and gather                                                                                   | The panel updates the correct resource while retaining previously collected items and counts.                                                    |
 | With sound enabled, gather successfully and then gather again on the depleted cell                                | Success and failure have distinguishable sounds. Have a person listen with speakers or headphones.                                               |
 | Temporarily set `WALK_MS` in `game/grid/grid_view.ts` to `3000`, reload, tap an arrow, then tap G during the walk | The inventory stays unchanged during the walk and updates only when the queued gathering animation starts. Restore `WALK_MS` to `120` afterward. |
+
+## Game Goal and ending
+
+| Action                                               | Expected observation                                                                                  |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Reload the game                                      | The ship-repair goal is visible and the victory banner is hidden.                                     |
+| Craft the final ship repair without enough materials | Missing materials are shown. The game continues and the banner remains hidden.                        |
+| Successfully craft the repaired ship                 | Crafting feedback plays before the victory banner appears. Victory audio plays when sound is enabled. |
+| Movement, gathering, and crafting after winning      | Player position, inventory, and changed cells remain unchanged.                                       |
+| Reload after winning                                 | A fresh game starts with ended false and the victory banner hidden.                                   |

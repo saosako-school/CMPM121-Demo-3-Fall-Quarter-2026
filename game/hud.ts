@@ -32,6 +32,8 @@ function describe(event: GameEvent): string {
 			}
 			return missingString;
 		}
+		case "ended":
+			return "Mission complete: your ship is repaired.";
 	}
 	return "error";
 }
@@ -61,6 +63,9 @@ export class Hud {
 		}
 		if (event.type === "crafted") {
 			this.showInventory(event.inventory);
+		}
+		if (event.type === "ended") {
+			element("ending").hidden = false;
 		}
 	}
 

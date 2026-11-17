@@ -7,6 +7,7 @@ export type Recipe = {
 	description: string;
 	ingredients: ingredient[];
 	output: ingredient;
+	winsGame?: boolean;
 };
 
 export const recipes: Recipe[] = [
@@ -54,5 +55,15 @@ export const recipes: Recipe[] = [
 			amount: 5,
 		}],
 		output: { name: "impenetrable boots", amount: 1 },
+	},
+	{
+		description:
+			"5 reinforced minerals + 3 crystal fragments -> repaired ship",
+		ingredients: [
+			{ name: "reinforced minerals", amount: 5 },
+			{ name: "crystal fragment", amount: 3 },
+		],
+		output: { name: "repaired ship", amount: 1 },
+		winsGame: true,
 	},
 ];
