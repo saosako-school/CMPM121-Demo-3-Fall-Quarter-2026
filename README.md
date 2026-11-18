@@ -1,6 +1,6 @@
-# GAME TITLE
+# MOON TO HOME
 
-You are an astronaut stranded on the Moon after a spaceship crash. Explore the moon, gather materials, and create new items to reach new terrain.
+You are an astronaut stranded on the Moon after a spaceship crash. Explore the Moon, gather materials, and create equipment to reach new terrain. Repair your ship to return home.
 
 [Playable Link](https://saosako-school.github.io/CMPM121-Demo-3-Fall-Quarter-2026/)
 
@@ -11,6 +11,10 @@ You are an astronaut stranded on the Moon after a spaceship crash. Explore the m
 - **Tab / Shift + Tab:** move forward or backward through recipe buttons
 - **Enter or Space:** activate the focused recipe button to craft. Recipes can also be clicked.
 - **Sound button:** toggle audio.
+
+Acid boots open acid terrain, where you can gather acid goop. Impenetrable boots also open crystal terrain, where you can obtain crystal fragments. Equipment remains in your inventory when used to enter terrain.
+
+Craft the repaired ship to win. After victory, movement, gathering, and crafting no longer change the game. Reload page to restart the game.
 
 ## Run locally
 
@@ -28,6 +32,8 @@ Start a local server:
 deno task dev
 ```
 
+Open the URL printed by the server. Add `?seed=121` for the world used by the manual test script.
+
 ## Add a recipe
 
 1. In `core/recipes.ts` add a row to `recipes`. Include a description, an `ingredients` list with each item's name and amount, and an `output` with its name and amount.
@@ -39,7 +45,7 @@ deno task dev
 
 Run automated core tests with `deno task test`, type checking with `deno task check`, and all checks plus the production build with `deno task ci`.
 
-Follow [TESTING.md](TESTING.md) for manual checks of input, animation timing, inventory, and sound. Automated core tests do not replace browser playtesting. Document new crafting, barrier, and ending checks as those features are completed.
+Follow [TESTING.md](TESTING.md) for manual checks of input, animation timing, inventory, and sound. Automated core tests do not replace browser playtesting. The script covers gathering, crafting, keyboard focus, barriers, and the ending.
 
 ## Two folders, two rules
 

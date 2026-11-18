@@ -11,6 +11,22 @@ import {
 // Each test has a Given-When-Then shape: https://martinfowler.com/bliki/GivenWhenThen.html
 const SEED = 121;
 
+// Partner planted bug(step 7) that replaced previous craft output.
+Deno.test("crafting twice keeps the output from both crafts", () => {
+	const state = newGame(SEED);
+	const recipe = recipes[0];
+
+	for (const item of recipe.ingredients) {
+		state.inventory[item.name] = item.amount * 2;
+	}
+	const first = apply(state, { type: "craft", recipe });
+	assertEquals(first[0].type, "crafted");
+	assertEquals(state.inventory[recipe.output.name], recipe.output.amount);
+	const second = apply(state, { type: "craft", recipe });
+	assertEquals(second[0].type, "crafted");
+	assertEquals(state.inventory[recipe.output.name], recipe.output.amount * 2);
+});
+
 Deno.test("successfully crafting a recipe updates inventory and returns event", () => {
 	const state = newGame(SEED);
 	const recipe = recipes[0];

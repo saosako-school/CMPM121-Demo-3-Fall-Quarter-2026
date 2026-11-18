@@ -6,14 +6,14 @@ For a person, or an agent driving a browser. Run `deno task dev` and open the lo
 
 | #  | Action                                                    | Expected observation                                                                                                                                          |
 | -- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1  | Load the page                                             | One canvas. A pale marker at the center of a green map. No console errors.                                                                                    |
+| 1  | Load the page                                             | One canvas. A pale marker at the center of a gray lunar map. No console errors.                                                                               |
 | 2  | Tap the right arrow                                       | The marker slides one cell east. `#live` says `moved to 1, 0`. `player` is `{ x: 1, y: 0 }`.                                                                  |
 | 3  | Walk until acid or crystal is ahead, then press toward it | The marker lurches and flashes red, then returns to its cell. `#live` says `blocked by acid at ...` or `blocked by crystal at ...`. `player` has not changed. |
 | 4  | Tap an arrow during a walk                                | The tap waits. The marker finishes the walk, then takes that step. It never skips a cell.                                                                     |
 | 5  | Mash arrows quickly, then stop                            | The marker settles on the cell `player` reports.                                                                                                              |
 | 6  | Hold an arrow down                                        | The marker keeps walking. Holding into a wall repeats the bump.                                                                                               |
 | 7  | Load `?seed=7`                                            | A different map.                                                                                                                                              |
-| 8  | Run `game.state` in the console                           | Plain data: `seed`, `player`, `inventory`, and `changedCells`. No terrain list.                                                                               |
+| 8  | Run `game.state` in the console                           | Plain data: `seed`, `player`, `inventory`, `changedCells`, and `ended`. No terrain list.                                                                      |
 | 9  | Press an arrow several times                              | Position and Terrain in the panel change as each step plays, and never ahead of the marker.                                                                   |
 | 10 | Make the window short, then press the down arrow          | The page does not scroll. The marker moves.                                                                                                                   |
 | 11 | Click the sound button, then press an arrow               | The button reads `Sound: off`, and the arrow still moves the marker.                                                                                          |
@@ -49,6 +49,23 @@ Reload with `?seed=121` before this sequence. Check the visible inventory panel 
 | With sound enabled, gather successfully and then gather again on the depleted cell                                | Success and failure have distinguishable sounds. Have a person listen with speakers or headphones.                                               |
 | Temporarily set `WALK_MS` in `game/grid/grid_view.ts` to `3000`, reload, tap an arrow, then tap G during the walk | The inventory stays unchanged during the walk and updates only when the queued gathering animation starts. Restore `WALK_MS` to `120` afterward. |
 
+## Crafting and keyboard controls
+
+Use a fresh game with `?seed=121`. Gather the amounts shown on the recipe cards; do not assume quantities from memory. Let animations settle before comparing the panel with `game.state.inventory`.
+
+| Action                                                                                         | Expected observation                                                                                      |
+| ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| With empty inventory, activate a recipe                                                        | The live message lists missing materials and amounts. Inventory and position stay unchanged.              |
+| Collect enough of one acid-boots ingredient but too little of the other, then attempt crafting | Crafting fails without spending either ingredient.                                                        |
+| Collect exactly enough for a recipe and activate it once                                       | Each ingredient decreases by its listed amount; the output increases by the quantity in the recipe title. |
+| Craft fluffy moss and reinforced minerals                                                      | Each successful craft awards two of its output.                                                           |
+| Craft the same recipe again when materials are insufficient                                    | Failure leaves every inventory count unchanged; no count becomes negative.                                |
+| Tab to a recipe, then use Enter or Space                                                       | The recipe activates and keyboard focus remains on the same button. Shift+Tab moves backward.             |
+| Click a recipe with the mouse, then press an arrow                                             | Focus is released after the mouse click and movement works.                                               |
+| Gather the last material needed for a recipe                                                   | Its readiness changes after animation playback settles, rather than before the gather plays.              |
+| Tab through the full recipe list on a small window                                             | The focused button stays visible, its outline is clear, and long ingredient names remain readable.        |
+| With sound enabled, craft successfully and then attempt an unavailable recipe                  | A person hears the success and failure feedback.                                                          |
+
 ## Equipment and barriers
 
 | Action                                               | Expected observation                                     |
@@ -69,3 +86,11 @@ Reload with `?seed=121` before this sequence. Check the visible inventory panel 
 | Successfully craft the repaired ship                 | Crafting feedback plays before the victory banner appears. Victory audio plays when sound is enabled. |
 | Movement, gathering, and crafting after winning      | Player position, inventory, and changed cells remain unchanged.                                       |
 | Reload after winning                                 | A fresh game starts with ended false and the victory banner hidden.                                   |
+
+## Step 7: Promoting a bug
+
+After conducting playtesting as a group we did not find a core bug, so we then created a planted bug.
+
+- **Bug:** successful crafting replaced the existing output count instead of adding the new output.
+- **Broken behavior:** crafting a second batch of items replaces the first batch in inventory.
+- **Fix:** add the recipe's output amount to the existing inventory count.
