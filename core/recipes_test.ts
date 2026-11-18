@@ -82,3 +82,25 @@ Deno.test("every recipe input has a valid source (terrain or another recipe)", (
 		}
 	}
 });
+
+Deno.test("a crafted event stays unchanged after later movement and crafting", () => {
+	const state = newGame(SEED);
+	const recipe = recipes[0];
+
+	for (const item of recipe.ingredients) {
+		state.inventory[item.name] = item.amount * 2;
+	}
+
+	const firstEvents = apply(state, { type: "craft", recipe });
+	assertEquals(firstEvents[0].type, "crafted");
+
+	const snapshot = JSON.parse(JSON.stringify(firstEvents));
+
+	apply(state, { type: "move", direction: "east" });
+	assertEquals(state.player, { x: 1, y: 0 });
+
+	const secondEvents = apply(state, { type: "craft", recipe });
+	assertEquals(secondEvents[0].type, "crafted");
+
+	assertEquals(firstEvents, snapshot);
+});

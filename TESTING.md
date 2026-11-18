@@ -49,6 +49,17 @@ Reload with `?seed=121` before this sequence. Check the visible inventory panel 
 | With sound enabled, gather successfully and then gather again on the depleted cell                                | Success and failure have distinguishable sounds. Have a person listen with speakers or headphones.                                               |
 | Temporarily set `WALK_MS` in `game/grid/grid_view.ts` to `3000`, reload, tap an arrow, then tap G during the walk | The inventory stays unchanged during the walk and updates only when the queued gathering animation starts. Restore `WALK_MS` to `120` afterward. |
 
+## Equipment and barriers
+
+| Action                                               | Expected observation                                     |
+| ---------------------------------------------------- | -------------------------------------------------------- |
+| Approach acid terrain without boots and try to enter | Movement is blocked and position stays unchanged.        |
+| Craft acid boots, then enter acid terrain            | Movement allowed.                                        |
+| Gather on a fresh acid cell                          | Acid goop increases by one; boots remain in inventory.   |
+| Try entering crystal terrain with only acid boots    | Movement is blocked.                                     |
+| Craft impenetrable boots                             | Acid boots remain in inventory.                          |
+| Enter crystal terrain and gather on a fresh cell     | Movement succeeds and crystal fragments increase by one. |
+
 ## Game Goal and ending
 
 | Action                                               | Expected observation                                                                                  |

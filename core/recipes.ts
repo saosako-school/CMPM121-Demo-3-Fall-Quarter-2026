@@ -49,8 +49,9 @@ export const recipes: Recipe[] = [
 		output: { name: "reinforced minerals", amount: 2 },
 	},
 	{
-		description: "acid boots + 5 reinforced minerals -> impenetrable boots",
-		ingredients: [{ name: "acid boots", amount: 1 }, {
+		description:
+			"2 acid goop + 5 reinforced minerals -> impenetrable boots",
+		ingredients: [{ name: "acid goop", amount: 2 }, {
 			name: "reinforced minerals",
 			amount: 5,
 		}],

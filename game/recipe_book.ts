@@ -38,7 +38,8 @@ export class RecipeBook {
 
 			const title = document.createElement("span");
 			title.className = "recipe-title";
-			title.textContent = recipe.output.name;
+			title.textContent =
+				`${recipe.output.name} ×${recipe.output.amount}`;
 
 			const status = document.createElement("span");
 			status.className = "recipe-status";

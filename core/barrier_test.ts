@@ -1,5 +1,13 @@
 import { assertEquals } from "@std/assert";
-import { apply, Cell, newGame, Terrain, terrainAt } from "./mod.ts";
+import {
+	apply,
+	Cell,
+	isPassable,
+	newGame,
+	Terrain,
+	terrainAt,
+	TerrainResourceMap,
+} from "./mod.ts";
 
 const SEED = 121;
 
@@ -43,4 +51,62 @@ Deno.test("barrier is shut before obtaining opener item and open after (the acid
 	// see if can gather now that on terrain
 	events = apply(state, { type: "gather" });
 	assertEquals(events[0].type, "gathered");
+});
+
+Deno.test("boots unlock the correct terrain", () => {
+	const state = newGame(SEED);
+
+	assertEquals(isPassable("acid", state), false);
+	assertEquals(isPassable("crystal", state), false);
+
+	state.inventory["acid boots"] = 1;
+
+	assertEquals(isPassable("acid", state), true);
+	assertEquals(isPassable("crystal", state), false);
+
+	state.inventory["impenetrable boots"] = 1;
+
+	assertEquals(isPassable("acid", state), true);
+	assertEquals(isPassable("crystal", state), true);
+});
+
+Deno.test("acid boots allow entry and gathering on acid terrain", () => {
+	const state = newGame(SEED);
+	const barrier = findTerrain("acid");
+	state.player = { x: barrier.x, y: barrier.y - 1 };
+
+	const blocked = apply(state, { type: "move", direction: "south" });
+	assertEquals(blocked[0].type, "blocked");
+
+	state.inventory["acid boots"] = 1;
+
+	const entered = apply(state, { type: "move", direction: "south" });
+	assertEquals(entered[0].type, "moved");
+	assertEquals(state.player, barrier);
+
+	apply(state, { type: "gather" });
+
+	assertEquals(state.inventory[TerrainResourceMap.acid], 1);
+	assertEquals(state.inventory["acid boots"], 1);
+});
+
+Deno.test("impenetrable boots allow entry and gathering on crystal terrain", () => {
+	const state = newGame(SEED);
+	const barrier = findTerrain("crystal");
+	state.player = { x: barrier.x, y: barrier.y - 1 };
+	state.inventory["acid boots"] = 1;
+
+	const blocked = apply(state, { type: "move", direction: "south" });
+	assertEquals(blocked[0].type, "blocked");
+
+	state.inventory["impenetrable boots"] = 1;
+
+	const entered = apply(state, { type: "move", direction: "south" });
+	assertEquals(entered[0].type, "moved");
+	assertEquals(state.player, barrier);
+
+	apply(state, { type: "gather" });
+
+	assertEquals(state.inventory[TerrainResourceMap.crystal], 1);
+	assertEquals(state.inventory["impenetrable boots"], 1);
 });
